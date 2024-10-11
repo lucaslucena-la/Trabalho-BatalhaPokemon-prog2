@@ -129,7 +129,6 @@ vector<Ataque> carregarAtaques(const string& nomeArquivo) {
 }
 
 // Função para verificar se um ataque pode ser atribuído ao Pokémon
-// Função para verificar se um ataque pode ser atribuído ao Pokémon
 bool podeAtribuirAtaque(const Pokemon& pokemon, const Ataque& ataque) {
     // Ataques do tipo "Normal" podem ser atribuídos a qualquer Pokémon
     if (ataque.getTipo() == "Normal") {
@@ -138,7 +137,6 @@ bool podeAtribuirAtaque(const Pokemon& pokemon, const Ataque& ataque) {
     // Ataque deve corresponder ao tipo do Pokémon
     return (ataque.getTipo() == pokemon.getTipo1() || ataque.getTipo() == pokemon.getTipo2());
 }
-
 
 // Função para atribuir ataques aleatórios a cada Pokémon
 void atribuirAtaquesAosPokemons(vector<Pokemon>& pokemons, const vector<Ataque>& ataques) {
@@ -237,11 +235,24 @@ int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque&
 }
 
 // Função para a CPU escolher um ataque aleatório
-int escolherAtaqueCPU(const Pokemon& pokemon) {
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> dist(0, 3);  // Assume que o Pokémon tem 4 ataques
-    return dist(gen);  // Retorna um índice aleatório de 0 a 3
+int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, int dificuldade) {
+    if (dificuldade == 1) {
+        // Escolhe um ataque aleatório no modo fácil
+        return rand() % 4;
+    } else {
+        // Escolhe o ataque mais eficaz no modo médio/difícil
+        int melhorAtaque = 0;
+        float melhorDano = 0;
+        for (int i = 0; i < 4; ++i) {
+            Ataque ataque = cpuPokemon.getAtaque(i);
+            float danoEstimado = calcularDano(cpuPokemon, jogadorPokemon, ataque);
+            if (danoEstimado > melhorDano) {
+                melhorDano = danoEstimado;
+                melhorAtaque = i;
+            }
+        }
+        return melhorAtaque;
+    }
 }
 
 // Função para sortear três Pokémons aleatórios para o jogador e para a CPU

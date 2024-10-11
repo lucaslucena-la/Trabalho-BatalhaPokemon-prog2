@@ -1,15 +1,15 @@
 #include "pokemon.h"
 #include <iostream>
-using namespace std;
 
-// Construtor da classe Pokémon
-Pokemon::Pokemon(string nome, string tipo1, string tipo2, int hp, int nivel, int ataque, int defesa, int velocidade, int ataqueEspecial, int defesaEspecial)
-    : nome(nome), tipo1(tipo1), tipo2(tipo2), hp(hp), nivel(nivel), ataque(ataque), defesa(defesa), velocidade(velocidade), ataqueEspecial(ataqueEspecial), defesaEspecial(defesaEspecial) {}
+// Construtor do Pokémon
+Pokemon::Pokemon(std::string nome, std::string tipo1, std::string tipo2, int hp, int nivel, int ataque, int defesa, int velocidade, int ataqueEspecial, int defesaEspecial)
+    : nome(nome), tipo1(tipo1), tipo2(tipo2), hp(hp), nivel(nivel), ataque(ataque), defesa(defesa), 
+      velocidade(velocidade), ataqueEspecial(ataqueEspecial), defesaEspecial(defesaEspecial), derrotado(false) {}
 
-// Getters com modificador const
-string Pokemon::getNome() const { return nome; }
-string Pokemon::getTipo1() const { return tipo1; }
-string Pokemon::getTipo2() const { return tipo2; }
+// Getters
+std::string Pokemon::getNome() const { return nome; }
+std::string Pokemon::getTipo1() const { return tipo1; }
+std::string Pokemon::getTipo2() const { return tipo2; }
 int Pokemon::getHP() const { return hp; }
 int Pokemon::getNivel() const { return nivel; }
 int Pokemon::getAtaque() const { return ataque; }
@@ -18,36 +18,43 @@ int Pokemon::getVelocidade() const { return velocidade; }
 int Pokemon::getAtaqueEspecial() const { return ataqueEspecial; }
 int Pokemon::getDefesaEspecial() const { return defesaEspecial; }
 
-// Retorna um ataque pelo índice
-Ataque Pokemon::getAtaque(int indice) const {
-    if (indice >= 0 && indice < ataques.size()) {
-        return ataques[indice];
-    }
-    // Retornar um ataque padrão ou lançar uma exceção (depende da lógica desejada)
-    return Ataque("Desconhecido", "Nenhum", 0, 0.0, "Nenhum");
-}
-
-// Adicionar ataques ao Pokémon
+// Adicionar ataque ao Pokémon
 void Pokemon::adicionarAtaque(Ataque ataque) {
-    if (ataques.size() < 4) {
+    if (ataques.size() < 4) {  // Limitar a 4 ataques
         ataques.push_back(ataque);
     }
 }
 
-// Exibir detalhes do Pokémon
-void Pokemon::exibirPokemon() const {
-    cout << "Pokemon: " << nome << "\nTipo1: " << tipo1 << ", Tipo2: " << tipo2
-         << "\nHP: " << hp << "\nNível: " << nivel << "\nAtaque: " << ataque << "\nDefesa: " << defesa
-         << "\nVelocidade: " << velocidade << "\nAtaque Especial: " << ataqueEspecial << "\nDefesa Especial: " << defesaEspecial << endl;
+// Retornar um ataque por índice
+Ataque Pokemon::getAtaque(int index) const {
+    if (index >= 0 && static_cast<size_t>(index) < ataques.size()) {
+        return ataques[index];
+    }
+    return Ataque(); // Retorna um ataque vazio, caso o índice esteja fora dos limites
 }
 
-// Reduzir HP ao receber dano
+// Reduzir HP após receber dano
 void Pokemon::receberDano(int dano) {
     hp -= dano;
-    if (hp < 0) hp = 0;
+    if (hp < 0) {
+        hp = 0;  // Garante que o HP não fique negativo
+    }
 }
 
-// Verificar se o Pokémon está derrotado
+// Verifica se o Pokémon está derrotado
 bool Pokemon::estaDerrotado() const {
-    return hp <= 0;
+    return hp == 0;  // Considera o Pokémon derrotado se o HP for zero
+}
+
+// Exibir os detalhes do Pokémon (para debugging ou exibição durante a batalha)
+void Pokemon::exibirPokemon() const {
+    std::cout << "Nome: " << nome << "\n"
+              << "Tipo: " << tipo1 << " / " << tipo2 << "\n"
+              << "HP: " << hp << "\n"
+              << "Nível: " << nivel << "\n"
+              << "Ataque: " << ataque << "\n"
+              << "Defesa: " << defesa << "\n"
+              << "Velocidade: " << velocidade << "\n"
+              << "Ataque Especial: " << ataqueEspecial << "\n"
+              << "Defesa Especial: " << defesaEspecial << "\n";
 }
