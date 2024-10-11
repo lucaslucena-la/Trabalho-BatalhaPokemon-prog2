@@ -22,14 +22,20 @@ void exibirMenu() {
 
 // Função para ajustar a dificuldade do jogo
 int ajustarDificuldade() {
-    int dificuldade;
+    int novaDificuldade;
     cout << "\nEscolha a dificuldade:" << endl;
     cout << "1. Fácil" << endl;
     cout << "2. Médio" << endl;
     cout << "3. Difícil" << endl;
     cout << "Escolha: ";
-    cin >> dificuldade;
-    return dificuldade;
+    cin >> novaDificuldade;
+
+    if (novaDificuldade >= 1 && novaDificuldade <= 3) {
+        return novaDificuldade; // Retorna a dificuldade escolhida
+    } else {
+        cout << "Opção inválida! Dificuldade será mantida." << endl;
+        return 1;  // Mantém a dificuldade padrão como Fácil se a escolha for inválida
+    }
 }
 
 // Função para exibir o ranking
@@ -37,6 +43,8 @@ void exibirRanking(int vitorias, int derrotas) {
     cout << "\n----- Ranking -----" << endl;
     cout << "Vitórias: " << vitorias << endl;
     cout << "Derrotas: " << derrotas << endl;
+    cout << "-------------------" << endl;
+
 }
 
 // Função para trocar o Pokémon do jogador

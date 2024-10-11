@@ -151,10 +151,20 @@ int main() {
                 }
             }
 
+        } else if (opcao == 2) {
+            // Ajustar a dificuldade
+            dificuldade = ajustarDificuldade();
+            cout << "Dificuldade ajustada para: " << dificuldade << endl;
+
+        } else if (opcao == 3) {
+            // Exibir o ranking
+            exibirRanking(vitorias, derrotas);
+
         } else if (opcao == 4) {
             // Sair do jogo
             cout << "Saindo do jogo..." << endl;
             break;
+
         } else {
             cout << "Opção inválida! Tente novamente." << endl;
         }
