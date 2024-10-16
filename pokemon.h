@@ -43,10 +43,7 @@ public:
 
     // Método para pegar um ataque por índice
     Ataque getAtaque(int index) const;
-
-    // Exibir detalhes do Pokémon
-    void exibirPokemon() const;
-
+    
     // Função para escolher um ataque e calcular o dano
     int calcularDano(Ataque ataque, Pokemon& oponente);
 

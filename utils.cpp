@@ -4,7 +4,7 @@
 #include <iostream>
 #include <random>  // Para sortear ataques aleatórios
 #include <cmath>
-#include <algorithm> // Para std::find
+#include <algorithm> // Para find
 
 using namespace std;
 
@@ -221,14 +221,14 @@ int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque&
 
     // Exibir se foi crítico
     if (critico == 2) {
-        std::cout << "Foi um golpe crítico!" << std::endl;
+        cout << "Foi um golpe crítico!" << endl;
     }
 
     // Exibir se foi super eficaz ou não
     if (eficacia > 1.0) {
-        std::cout << "Foi super eficaz!" << std::endl;
+        cout << "Foi super eficaz!" << endl;
     } else if (eficacia < 1.0) {
-        std::cout << "Não foi muito eficaz..." << std::endl;
+        cout << "Não foi muito eficaz..." << endl;
     }
 
     return danoFinal;
@@ -256,31 +256,90 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
 }
 
 // Função para sortear três Pokémons aleatórios para o jogador e para a CPU
-void sortearPokemons(const std::vector<Pokemon>& pokemons, std::vector<Pokemon>& jogadorPokemons, std::vector<Pokemon>& cpuPokemons) {
+void sortearPokemons(const vector<Pokemon>& todosPokemons, vector<Pokemon>& jogadorPokemons, vector<Pokemon>& cpuPokemons, int dificuldade) {
+    // Criação de um gerador de números aleatórios
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<> dist(0, pokemons.size() - 1);
+    // Cria uma distribuição uniforme para escolher índices aleatórios dentro do intervalo de pokémons disponíveis
+    uniform_int_distribution<> dist(0, todosPokemons.size() - 1);
 
-    // Vetor para armazenar índices já usados para evitar repetição
-    std::vector<int> indicesUsados;
+    // Vetor para armazenar os índices dos Pokémons já sorteados (para evitar repetição)
+    vector<int> indicesUsados;
 
-    // Sortear três Pokémons para o jogador
+    // Sorteia três Pokémons para o jogador
     while (jogadorPokemons.size() < 3) {
+        // Sorteia um índice aleatório entre os Pokémons disponíveis
         int indice = dist(gen);
-        // Verificar se o índice já foi usado
-        if (std::find(indicesUsados.begin(), indicesUsados.end(), indice) == indicesUsados.end()) {
-            jogadorPokemons.push_back(pokemons[indice]);
-            indicesUsados.push_back(indice);  // Marcar índice como usado
+        // Verifica se o índice sorteado já foi usado
+        if (find(indicesUsados.begin(), indicesUsados.end(), indice) == indicesUsados.end()) {
+            // Se o índice ainda não foi usado, adiciona o Pokémon sorteado ao vetor do jogador
+            jogadorPokemons.push_back(todosPokemons[indice]);
+            // Marca o índice como usado
+            indicesUsados.push_back(indice);
         }
     }
 
-    // Sortear três Pokémons para a CPU
-    while (cpuPokemons.size() < 3) {
-        int indice = dist(gen);
-        // Verificar se o índice já foi usado
-        if (std::find(indicesUsados.begin(), indicesUsados.end(), indice) == indicesUsados.end()) {
-            cpuPokemons.push_back(pokemons[indice]);
-            indicesUsados.push_back(indice);  // Marcar índice como usado
+    // Inicializa as variáveis para armazenar o nível mínimo e máximo dos Pokémons do jogador
+    int nivelMinimoJogador = jogadorPokemons[0].getNivel();
+    int nivelMaximoJogador = jogadorPokemons[0].getNivel();
+
+    // Loop para encontrar o Pokémon mais fraco (nível mínimo) e o mais forte (nível máximo) do jogador
+    for (const auto& pokemon : jogadorPokemons) {
+        if (pokemon.getNivel() < nivelMinimoJogador) {
+            // Atualiza o nível mínimo se o Pokémon atual tiver um nível menor
+            nivelMinimoJogador = pokemon.getNivel();
         }
+        if (pokemon.getNivel() > nivelMaximoJogador) {
+            // Atualiza o nível máximo se o Pokémon atual tiver um nível maior
+            nivelMaximoJogador = pokemon.getNivel();
+        }
+    }
+
+    // Vetor para armazenar os Pokémons elegíveis para a CPU, de acordo com a dificuldade
+    vector<Pokemon> pokemonsElegiveis;
+
+    // Loop para filtrar Pokémons da CPU com base na dificuldade
+    for (size_t i = 0; i < todosPokemons.size(); ++i) {
+        // Verifica se o Pokémon ainda não foi sorteado para o jogador (não está em indicesUsados)
+        if (find(indicesUsados.begin(), indicesUsados.end(), i) == indicesUsados.end()) {
+            // Se a dificuldade for "Fácil"
+            if (dificuldade == 1) {
+                // Adiciona apenas os Pokémons cujo nível seja menor ou igual ao do Pokémon mais fraco do jogador
+                if (todosPokemons[i].getNivel() <= nivelMinimoJogador) {
+                    pokemonsElegiveis.push_back(todosPokemons[i]);
+                }
+            }
+            // Se a dificuldade for "Médio"
+            else if (dificuldade == 2) {
+                // Adiciona os Pokémons cujo nível seja menor ou igual ao do Pokémon mais forte do jogador
+                if (todosPokemons[i].getNivel() <= nivelMaximoJogador) {
+                    pokemonsElegiveis.push_back(todosPokemons[i]);
+                }
+            }
+            // Se a dificuldade for "Difícil"
+            else if (dificuldade == 3) {
+                // Adiciona os Pokémons cujo nível seja maior ou igual ao do Pokémon mais forte do jogador
+                if (todosPokemons[i].getNivel() >= nivelMaximoJogador) {
+                    pokemonsElegiveis.push_back(todosPokemons[i]);
+                }
+            }
+        }
+    }
+
+    // Sorteia três Pokémons para a CPU a partir da lista de Pokémons elegíveis
+    while (cpuPokemons.size() < 3) {
+        // Se a lista de Pokémons elegíveis estiver vazia, exibe uma mensagem de erro e sai
+        if (pokemonsElegiveis.empty()) {
+            cerr << "Erro: Não há Pokémons elegíveis suficientes para a CPU!" << endl;
+            return;
+        }
+
+        // Sorteia um índice da lista de Pokémons elegíveis
+        uniform_int_distribution<> distElegivel(0, pokemonsElegiveis.size() - 1);
+        int indice = distElegivel(gen);
+        // Adiciona o Pokémon sorteado à lista da CPU
+        cpuPokemons.push_back(pokemonsElegiveis[indice]);
+        // Remove o Pokémon sorteado da lista para evitar repetição
+        pokemonsElegiveis.erase(pokemonsElegiveis.begin() + indice);
     }
 }

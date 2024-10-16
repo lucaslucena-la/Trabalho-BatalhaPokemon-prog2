@@ -7,16 +7,16 @@
 #include "ataque.h"
 
 // Função para carregar Pokémons a partir de um arquivo
-std::vector<Pokemon> carregarPokemons(const std::string& nomeArquivo);
+vector<Pokemon> carregarPokemons(const string& nomeArquivo);
 
 // Função para carregar Ataques a partir de um arquivo
-std::vector<Ataque> carregarAtaques(const std::string& nomeArquivo);
+vector<Ataque> carregarAtaques(const string& nomeArquivo);
 
 // Função para verificar se um ataque pode ser atribuído ao Pokémon
 bool podeAtribuirAtaque(const Pokemon& pokemon, const Ataque& ataque);
 
 // Função para atribuir ataques aleatórios a cada Pokémon
-void atribuirAtaquesAosPokemons(std::vector<Pokemon>& pokemons, const std::vector<Ataque>& ataques);
+void atribuirAtaquesAosPokemons(vector<Pokemon>& pokemons, const vector<Ataque>& ataques);
 
 // Função para calcular dano
 int calcularCritico();
@@ -29,6 +29,6 @@ int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque&
 int escolherAtaqueCPU(const Pokemon& pokemon);
 
 // Função para sortear três Pokémons aleatórios para o jogador e para a CPU
-void sortearPokemons(const std::vector<Pokemon>& pokemons, std::vector<Pokemon>& jogadorPokemons, std::vector<Pokemon>& cpuPokemons);
+void sortearPokemons(const vector<Pokemon>& pokemons, vector<Pokemon>& jogadorPokemons, vector<Pokemon>& cpuPokemons, int dificuldade);
 
 #endif // UTILS_H

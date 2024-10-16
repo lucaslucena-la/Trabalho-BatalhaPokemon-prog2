@@ -2,26 +2,29 @@
 #define ATAQUE_H
 
 #include <string>
+#include <iostream>
+
+using namespace std;
 
 class Ataque {
 private:
-    std::string nome;
-    std::string categoria;
+    string nome;
+    string categoria;
     int poder;
     float precisao;
-    std::string tipo;
+    string tipo;
 
 public:
     // Construtor padrão
     Ataque();
 
     // Construtor personalizado (sem qualificação "Ataque::")
-    Ataque(std::string nome, std::string categoria, int poder, float precisao, std::string tipo);
+    Ataque(string nome, string categoria, int poder, float precisao, string tipo);
 
     // Getters e outros métodos...
-    std::string getNome() const;
-    std::string getCategoria() const;
-    std::string getTipo() const;
+    string getNome() const;
+    string getCategoria() const;
+    string getTipo() const;
     int getPoder() const;
     float getPrecisao() const;
 };

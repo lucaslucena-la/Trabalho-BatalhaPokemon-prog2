@@ -14,7 +14,7 @@ int main() {
     vector<string> logDeBatalha;  // Adicionar o vetor para armazenar o histórico
 
     int dificuldade = 1;  // Dificuldade padrão: Fácil
-    cout << "A dificuldade atual é: " << dificuldade << std::endl;
+    cout << "A dificuldade atual é: " << dificuldade << endl;
 
     // Loop do menu
     while (true) {
@@ -28,18 +28,29 @@ int main() {
 
             // Sortear Pokémons para o jogador e a CPU
             vector<Pokemon> jogadorPokemons, cpuPokemons;
-            sortearPokemons(pokemons, jogadorPokemons, cpuPokemons);
+            sortearPokemons(pokemons, jogadorPokemons, cpuPokemons, dificuldade);
 
             // Exibir Pokémons sorteados para o jogador e a CPU
             cout << "\nSeus Pokémons sorteados:\n";
-            for (size_t  i = 0; i < jogadorPokemons.size(); ++i) {
-                cout << i + 1 << ". " << jogadorPokemons[i].getNome() << " (HP: " << jogadorPokemons[i].getHP() << ")\n";
+            for (size_t i = 0; i < jogadorPokemons.size(); ++i) {
+                cout << i + 1 << ". " << jogadorPokemons[i].getNome()
+                    << " (HP: " << jogadorPokemons[i].getHP()
+                    << ", Nível: " << jogadorPokemons[i].getNivel()
+                    << ", Tipo 1: " << jogadorPokemons[i].getTipo1()
+                    << ", Tipo 2: " << (jogadorPokemons[i].getTipo2().empty() ? "Nenhum" : jogadorPokemons[i].getTipo2())
+                    << ")\n";
             }
 
             cout << "\nPokémons sorteados da CPU:\n";
             for (const auto& p : cpuPokemons) {
-                cout << "- " << p.getNome() << " (HP: " << p.getHP() << ")\n";
+                cout << "- " << p.getNome()
+                    << " (HP: " << p.getHP()
+                    << ", Nível: " << p.getNivel()
+                    << ", Tipo 1: " << p.getTipo1()
+                    << ", Tipo 2: " << (p.getTipo2().empty() ? "Nenhum" : p.getTipo2())
+                    << ")\n";
             }
+
 
             // Jogador escolhe qual Pokémon usar primeiro
             int escolhaInicial;
@@ -115,7 +126,7 @@ int main() {
                             // CPU troca para o próximo Pokémon não derrotado
                             cpuPokemon = trocarPokemonCPU(cpuPokemons);
                             cout << "CPU escolheu " << cpuPokemon.getNome() << " para continuar a batalha!" << endl;
-                        } catch (const std::runtime_error& e) {
+                        } catch (const runtime_error& e) {
                             cout << "Todos os Pokémons da CPU foram derrotados! Você venceu!" << endl;
                             break;  // Termina a batalha se não houver mais Pokémons
                         }
