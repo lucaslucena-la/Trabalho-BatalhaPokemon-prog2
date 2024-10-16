@@ -6,6 +6,14 @@
 #include "pokemon.h"
 #include "ataque.h"
 
+struct Ranking {
+    int vitoriasFacil;
+    int vitoriasMedio;
+    int vitoriasDificil;
+    int derrotas;
+    int pontuacao;
+};
+
 // Função para carregar Pokémons a partir de um arquivo
 vector<Pokemon> carregarPokemons(const string& nomeArquivo);
 
@@ -30,5 +38,15 @@ int escolherAtaqueCPU(const Pokemon& pokemon);
 
 // Função para sortear três Pokémons aleatórios para o jogador e para a CPU
 void sortearPokemons(const vector<Pokemon>& pokemons, vector<Pokemon>& jogadorPokemons, vector<Pokemon>& cpuPokemons, int dificuldade);
+
+
+Ranking carregarRanking(const std::string& nomeArquivo);
+void salvarRanking(const Ranking& ranking, const std::string& nomeArquivo);
+void exibirRanking(const Ranking& ranking);
+void atualizarRanking(Ranking& ranking, int dificuldade);
+void atualizarDerrota(Ranking& ranking);
+void reiniciarRanking(Ranking& ranking);
+
+
 
 #endif // UTILS_H

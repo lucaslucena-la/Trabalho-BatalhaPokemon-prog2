@@ -8,15 +8,16 @@
 
 using namespace std;
 
-// Função para exibir o menu do jogo
 void exibirMenu() {
     cout << "----- Menu -----" << endl;
     cout << "1. Iniciar Batalha" << endl;
     cout << "2. Ajustar Dificuldade" << endl;
     cout << "3. Visualizar Ranking" << endl;
-    cout << "4. Sair" << endl;
+    cout << "4. Reiniciar Ranking" << endl;
+    cout << "5. Sair" << endl;  // Nova opção para reiniciar o ranking
     cout << "Escolha uma opção: ";
 }
+
 
 // Função para ajustar a dificuldade do jogo
 // Retorna a nova dificuldade escolhida pelo jogador

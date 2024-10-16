@@ -8,6 +8,8 @@
 
 using namespace std;
 
+
+
 // Função para carregar Pokémons a partir de um arquivo
 vector<Pokemon> carregarPokemons(const string& nomeArquivo) {
     vector<Pokemon> pokemons;
@@ -140,29 +142,33 @@ bool podeAtribuirAtaque(const Pokemon& pokemon, const Ataque& ataque) {
 
 // Função para atribuir ataques aleatórios a cada Pokémon
 void atribuirAtaquesAosPokemons(vector<Pokemon>& pokemons, const vector<Ataque>& ataques) {
-    random_device rd;  // Para gerar números aleatórios
-    mt19937 gen(rd()); // Gerador
-    uniform_int_distribution<> dist(0, ataques.size() - 1); // Distribuição
+    random_device rd;  // Gera uma semente aleatória para o gerador de números pseudo-aleatórios
+    mt19937 gen(rd()); // Cria o gerador Mersenne Twister inicializado com a semente gerada
+    uniform_int_distribution<> dist(0, ataques.size() - 1); // Cria uma distribuição uniforme para sortear ataques (índices de 0 ao tamanho da lista de ataques)
 
     for (auto& pokemon : pokemons) {
-        vector<Ataque> ataquesAtribuidos;
+        vector<Ataque> ataquesAtribuidos;  // Vetor temporário para armazenar os ataques já atribuídos a este Pokémon
 
-        while (ataquesAtribuidos.size() < 4) {  // Cada Pokémon deve ter 4 ataques
-            int indice = dist(gen);
-            const Ataque& ataque = ataques[indice];
+        while (ataquesAtribuidos.size() < 4) {  // Cada Pokémon deve ter exatamente 4 ataques
+            int indice = dist(gen);  // Sorteia um índice aleatório dentro do vetor de ataques
+            const Ataque& ataque = ataques[indice];  // Seleciona o ataque com base no índice sorteado
 
-            // Verifica se o ataque é compatível com o Pokémon e se ainda não foi atribuído
+            // Verifica se o ataque é compatível com o Pokémon (regra de tipo) e se ainda não foi atribuído
             if (podeAtribuirAtaque(pokemon, ataque)) {
                 bool ataqueJaAtribuido = false;
+                
+                // Verifica se o ataque já foi atribuído ao Pokémon para evitar repetições
                 for (const auto& a : ataquesAtribuidos) {
-                    if (a.getNome() == ataque.getNome()) {
+                    if (a.getNome() == ataque.getNome()) {  // Se já houver um ataque com o mesmo nome
                         ataqueJaAtribuido = true;
-                        break;
+                        break;  // Para o loop, pois o ataque já foi atribuído
                     }
                 }
+
+                // Se o ataque ainda não foi atribuído, adiciona ao Pokémon
                 if (!ataqueJaAtribuido) {
-                    pokemon.adicionarAtaque(ataque);
-                    ataquesAtribuidos.push_back(ataque);
+                    pokemon.adicionarAtaque(ataque);  // Atribui o ataque ao Pokémon
+                    ataquesAtribuidos.push_back(ataque);  // Armazena o ataque para controle
                 }
             }
         }
@@ -257,9 +263,11 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
 
 // Função para sortear três Pokémons aleatórios para o jogador e para a CPU
 void sortearPokemons(const vector<Pokemon>& todosPokemons, vector<Pokemon>& jogadorPokemons, vector<Pokemon>& cpuPokemons, int dificuldade) {
+    
     // Criação de um gerador de números aleatórios
     random_device rd;
     mt19937 gen(rd());
+
     // Cria uma distribuição uniforme para escolher índices aleatórios dentro do intervalo de pokémons disponíveis
     uniform_int_distribution<> dist(0, todosPokemons.size() - 1);
 
@@ -342,4 +350,93 @@ void sortearPokemons(const vector<Pokemon>& todosPokemons, vector<Pokemon>& joga
         // Remove o Pokémon sorteado da lista para evitar repetição
         pokemonsElegiveis.erase(pokemonsElegiveis.begin() + indice);
     }
+}
+
+/************************* FUNÇÕES DO RANKING **************************/
+
+// Função para carregar o ranking a partir de um arquivo
+// Se o arquivo não existir ou não puder ser aberto, retorna um ranking inicial com 0 vitórias, derrotas e pontuação
+Ranking carregarRanking(const std::string& nomeArquivo) {
+    Ranking ranking = {0, 0, 0, 0, 0};  // Inicializa o ranking com valores padrão
+    std::ifstream arquivo(nomeArquivo);  // Abre o arquivo de ranking para leitura
+
+    if (arquivo.is_open()) {
+        // Carrega todas as informações de vitórias, derrotas e pontuação
+        arquivo >> ranking.vitoriasFacil >> ranking.vitoriasMedio 
+                >> ranking.vitoriasDificil >> ranking.derrotas >> ranking.pontuacao;
+        arquivo.close();
+    } else {
+        std::cerr << "Erro ao abrir o arquivo de ranking: " << nomeArquivo << std::endl;
+    }
+
+    return ranking;
+}
+
+// Função para salvar o ranking em um arquivo
+// O ranking é salvo em formato de texto, com vitórias, derrotas e pontuação separadas por espaço
+void salvarRanking(const Ranking& ranking, const std::string& nomeArquivo) {
+    std::ofstream arquivo(nomeArquivo);  // Abre o arquivo de ranking para escrita
+    if (arquivo.is_open()) {
+        // Salva todas as informações de vitórias, derrotas e pontuação no arquivo
+        arquivo << ranking.vitoriasFacil << " " 
+                << ranking.vitoriasMedio << " " 
+                << ranking.vitoriasDificil << " " 
+                << ranking.derrotas << " " 
+                << ranking.pontuacao << "\n";
+        arquivo.close();  // Fecha o arquivo após a gravação
+        std::cout << "Ranking salvo com sucesso no arquivo: " << nomeArquivo << std::endl;
+    } else {
+        std::cerr << "Erro ao abrir o arquivo de ranking para escrita: " << nomeArquivo << std::endl;
+    }
+}
+
+
+
+// Função para exibir o ranking no console
+// Exibe o número de vitórias, derrotas e a pontuação acumulada pelo jogador
+void exibirRanking(const Ranking& ranking) {
+    std::cout << "\n----- Ranking -----\n";
+    std::cout << "Vitórias (Fácil): " << ranking.vitoriasFacil << "\n";     // Vitórias no modo Fácil
+    std::cout << "Vitórias (Médio): " << ranking.vitoriasMedio << "\n";     // Vitórias no modo Médio
+    std::cout << "Vitórias (Difícil): " << ranking.vitoriasDificil << "\n"; // Vitórias no modo Difícil
+    std::cout << "Derrotas: " << ranking.derrotas << "\n";                  // Total de derrotas
+    std::cout << "Pontuação: " << ranking.pontuacao << "\n";                // Pontuação total
+    std::cout << "-------------------\n";
+}
+
+// Função para atualizar o ranking após uma vitória
+// A pontuação é incrementada com base na dificuldade: Fácil = 10, Médio = 20, Difícil = 30 pontos
+void atualizarRanking(Ranking& ranking, int dificuldade) {
+    // Atualiza a pontuação e as vitórias com base na dificuldade
+    if (dificuldade == 1) {
+        ranking.vitoriasFacil++;     // Incrementa vitórias no modo Fácil
+        ranking.pontuacao += 10;     // Modo Fácil adiciona 10 pontos
+    } else if (dificuldade == 2) {
+        ranking.vitoriasMedio++;     // Incrementa vitórias no modo Médio
+        ranking.pontuacao += 20;     // Modo Médio adiciona 20 pontos
+    } else if (dificuldade == 3) {
+        ranking.vitoriasDificil++;   // Incrementa vitórias no modo Difícil
+        ranking.pontuacao += 30;     // Modo Difícil adiciona 30 pontos
+    }
+}
+
+
+// Função para atualizar o ranking após uma derrota
+// Apenas incrementa o número de derrotas, sem alterar a pontuação
+void atualizarDerrota(Ranking& ranking) {
+    ranking.derrotas++;  // Incrementa o número de derrotas
+}
+
+void reiniciarRanking(Ranking& ranking) {
+    // Redefine todas as variáveis do ranking para zero
+    ranking.vitoriasFacil = 0;
+    ranking.vitoriasMedio = 0;
+    ranking.vitoriasDificil = 0;
+    ranking.derrotas = 0;
+    ranking.pontuacao = 0;
+    
+    // Salva o ranking zerado no arquivo
+    salvarRanking(ranking, "ranking.txt");
+    
+    std::cout << "Ranking reiniciado com sucesso!" << std::endl;
 }
