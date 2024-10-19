@@ -3,15 +3,22 @@
 #include <string>
 #include "pokemon.h"
 #include "ataque.h"
+#include "utils.h"
 #include "game.h"
+#include "jogador.h"
 
 using namespace std;
 
 int main() {
     int opcao;
+
+    // Carregamento do arquivo de jogadores
+    vector<Jogador> jogadores = carregarJogadores("jogadores.txt");  // Carrega os jogadores cadastrados
+    Jogador jogadorAtual = selecionarJogador(jogadores);  // Seleciona ou cadastra um novo jogador
+    salvarJogadores(jogadores, "jogadores.txt");  // Salva os jogadores atualizados no arquivo
+    
     vector<string> logDeBatalha;  // Adicionar o vetor para armazenar o histórico
     
-    Ranking ranking = carregarRanking("ranking.txt");  // Carrega o ranking do arquivo no início do jogo
     int dificuldade = 1;  // Dificuldade padrão: Fácil
     cout << "A dificuldade atual é: " << dificuldade << endl;
 
@@ -20,7 +27,7 @@ int main() {
         exibirMenu();
         cin >> opcao;
 
-        //1 = iniciar batalha
+        // 1. Iniciar Batalha
         if (opcao == 1) {
             // Carregar Pokémons do arquivo
             vector<Pokemon> pokemons = carregarPokemons("pokemons.txt");
@@ -51,11 +58,11 @@ int main() {
                     << ")\n";
             }
 
-
             // Jogador escolhe qual Pokémon usar primeiro
             int escolhaInicial;
             cout << "\nEscolha seu Pokémon inicial (1, 2 ou 3): ";
             cin >> escolhaInicial;
+
             escolhaInicial -= 1;  // Ajustar para o índice
             Pokemon& jogadorPokemon = jogadorPokemons[escolhaInicial];
             Pokemon& cpuPokemon = cpuPokemons[0];  // CPU começa com o primeiro Pokémon
@@ -70,20 +77,22 @@ int main() {
                 removerPokemonsDerrotados(jogadorPokemons);
                 removerPokemonsDerrotados(cpuPokemons);
 
+                // Atualizar a vitória ou derrota do jogador e salvar no arquivo
                 if (jogadorPokemons.empty()) {
                     cout << "\nTodos os seus Pokémons foram derrotados! Você perdeu!" << endl;
-                    atualizarDerrota(ranking);  // Atualiza derrotas no ranking
-                    salvarRanking(ranking, "ranking.txt");  // Salva o ranking atualizado no arquivo
-                    break;
+                    atualizarDerrotaJogador(jogadorAtual, jogadores);  // Atualiza a derrota do jogador no arquivo
+                    salvarJogadores(jogadores, "jogadores.txt");
+
+                    break;  // Sai do loop da batalha
                 }
 
                 if (cpuPokemons.empty()) {
                     cout << "\nTodos os Pokémons da CPU foram derrotados! Você venceu!" << endl;
-                    atualizarRanking(ranking, dificuldade);  // Atualiza vitórias e pontuação com base na dificuldade
-                    salvarRanking(ranking, "ranking.txt");  // Salva o ranking atualizado no arquivo
-                    break;
-                }
+                    atualizarVitoriaJogador(jogadorAtual, dificuldade, jogadores);  // Atualiza a vitória e pontuação no arquivo
+                    salvarJogadores(jogadores, "jogadores.txt");
 
+                    break;  // Sai do loop da batalha
+                }
 
                 // Exibir informações dos Pokémons em batalha
                 cout << "\n----- Status dos Pokémons -----\n";
@@ -113,14 +122,11 @@ int main() {
                     // Exibir o dano causado e o HP do oponente
                     cout << jogadorPokemon.getNome() << " usou " << ataqueJogador.getNome() << " e causou " << danoJogador << " de dano!" << endl;
                     cout << cpuPokemon.getNome() << " agora tem " << cpuPokemon.getHP() << " de HP!" << endl;
-                    
-                
+
                     // Verificar se o Pokémon da CPU foi derrotado
                     if (cpuPokemon.estaDerrotado()) {
-                        cout << cpuPokemon.getNome() << " foi derrotado!" << endl; 
-                    
+                        cout << cpuPokemon.getNome() << " foi derrotado!" << endl;
                         try {
-                            
                             // Remover os Pokémons derrotados antes de trocar
                             removerPokemonsDerrotados(cpuPokemons);
                             // CPU troca para o próximo Pokémon não derrotado
@@ -128,20 +134,12 @@ int main() {
                             cout << "CPU escolheu " << cpuPokemon.getNome() << " para continuar a batalha!" << endl;
                         } catch (const runtime_error& e) {
                             cout << "Todos os Pokémons da CPU foram derrotados! Você venceu!" << endl;
-                            atualizarRanking(ranking, dificuldade);  // Atualiza derrotas no ranking
-                            // Exibe o estado do ranking após a atualização
-                            std::cout << "Depois da vitória - Vitórias (Fácil): " << ranking.vitoriasFacil 
-                                        << ", Vitórias (Médio): " << ranking.vitoriasMedio 
-                                        << ", Vitórias (Difícil): " << ranking.vitoriasDificil
-                                        << ", Derrotas: " << ranking.derrotas 
-                                        << ", Pontuação: " << ranking.pontuacao << std::endl;
-
-                            // Salva o ranking no arquivo
-                            salvarRanking(ranking, "ranking.txt");  // Salva o ranking atualizado no arquivo
+                            atualizarVitoriaJogador(jogadorAtual, dificuldade, jogadores);  // Atualiza a vitória e pontuação no arquivo
+                            salvarJogadores(jogadores, "jogadores.txt");  // Salva o jogador atualizado no arquivo
                             break;  // Termina a batalha se não houver mais Pokémons
                         }
                     }
-                }else if (acaoJogador == 2) {
+                } else if (acaoJogador == 2) {
                     // Jogador troca Pokémon
                     jogadorPokemon = trocarPokemonJogador(jogadorPokemons);
                 } else if (acaoJogador == 3) {
@@ -177,13 +175,19 @@ int main() {
             dificuldade = ajustarDificuldade();
             cout << "Dificuldade ajustada para: " << dificuldade << endl;
 
-        }else if (opcao == 3) {
-            // Carregar o ranking novamente para garantir que está atualizado
-            ranking = carregarRanking("ranking.txt");
-            exibirRanking(ranking);  // Exibe o ranking carregado
-        } else if (opcao ==4){
-                reiniciarRanking(ranking);  // Chama a função para reiniciar o ranking        
-        }else if(opcao == 5) {
+        } else if (opcao == 3) {
+            // Exibe o ranking de todos os jogadores cadastrados
+            for (const auto& jogador : jogadores) {
+                cout << "\n----- Ranking do Jogador: " << jogador.getNome() << " -----" << endl;
+                cout << "Vitórias (Fácil): " << jogador.getVitoriasFacil() << endl;
+                cout << "Vitórias (Médio): " << jogador.getVitoriasMedio() << endl;
+                cout << "Vitórias (Difícil): " << jogador.getVitoriasDificil() << endl;
+                cout << "Derrotas: " << jogador.getDerrotas() << endl;
+                cout << "Pontuação: " << jogador.getPontuacao() << endl;
+                cout << "-----------------------------------------------" << endl;
+            }
+
+        } else if (opcao == 4) {
             // Sair do jogo
             cout << "Saindo do jogo..." << endl;
             break;
@@ -195,4 +199,3 @@ int main() {
 
     return 0;
 }
-
