@@ -3,7 +3,6 @@
 #include <string>
 #include "pokemon.h"
 #include "ataque.h"
-#include "utils.h"
 #include "game.h"
 
 using namespace std;

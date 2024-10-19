@@ -5,8 +5,8 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall
 
 # Arquivos de código fonte e cabeçalhos
-SRC = main.cpp game.cpp utils.cpp pokemon.cpp ataque.cpp
-HEADERS = game.h utils.h pokemon.h ataque.h
+SRC = main.cpp game.cpp pokemon.cpp ataque.cpp
+HEADERS = game.h pokemon.h ataque.h
 
 # Nome do executável
 TARGET = pokemon_battle
