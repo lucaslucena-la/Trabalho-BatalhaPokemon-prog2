@@ -1,5 +1,4 @@
 #include "pokemon.h"  // Inclui o arquivo de cabeçalho da classe Pokemon
-#include <iostream>   // Inclui a biblioteca padrão de entrada/saída
 
 // Construtor do Pokémon
 // Inicializa os atributos de um Pokémon com os valores fornecidos

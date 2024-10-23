@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include "ataque.h"
+#include <iostream>   // Inclui a biblioteca padrão de entrada/saída
+
 
 using namespace std;
 

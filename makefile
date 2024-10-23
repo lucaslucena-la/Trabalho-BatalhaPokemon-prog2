@@ -5,8 +5,8 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall
 
 # Arquivos de código fonte e cabeçalhos
-SRC = main.cpp game.cpp utils.cpp jogador.cpp pokemon.cpp ataque.cpp
-HEADERS = game.h utils.h pokemon.h ataque.h jogador.h
+SRC = main.cpp game.cpp jogador.cpp pokemon.cpp ataque.cpp
+HEADERS = game.h pokemon.h ataque.h jogador.h
 
 # Nome do executável
 TARGET = pokemon_battle
@@ -23,5 +23,6 @@ clean:
 
 # Executar o programa
 run: $(TARGET)
+	clear
 	./$(TARGET)
 

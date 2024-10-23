@@ -1,7 +1,4 @@
 #include "jogador.h"
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 using namespace std;
 
@@ -59,8 +56,6 @@ void Jogador::setDerrotas(int derrotas) {
 void Jogador::setPontuacao(int pontuacao) {
     this->pontuacao = pontuacao;
 }
-
-
 
 // Adiciona uma vitória baseada na dificuldade
 void Jogador::adicionarVitoria(int dificuldade) {
@@ -128,11 +123,8 @@ void salvarJogadores(const vector<Jogador>& jogadores, const string& arquivo) {
         return;
     }
 
-    cout << "Salvando jogadores no arquivo...\n";  // Mensagem de debug
-
     // Percorre todos os jogadores e salva suas informações no arquivo
     for (const auto& jogador : jogadores) {
-        cout << "Salvando jogador: " << jogador.getNome() << endl;  // Debug para cada jogador
         outFile << jogador.getNome() << " " 
                 << jogador.getVitoriasFacil() << " " 
                 << jogador.getVitoriasMedio() << " " 
@@ -144,7 +136,6 @@ void salvarJogadores(const vector<Jogador>& jogadores, const string& arquivo) {
     outFile.close();
     cout << "Jogadores salvos com sucesso." << endl;  // Mensagem de debug
 }
-
 
 // Função para selecionar ou cadastrar um novo jogador
 Jogador selecionarJogador(vector<Jogador>& jogadores) {
