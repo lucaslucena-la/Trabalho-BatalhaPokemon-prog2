@@ -1,4 +1,2 @@
-Lucena 1 0 0 0 10
-Sandino 2 0 0 1 20
-Aurelio 0 0 0 0 0
-Biia 1 0 0 0 10
+Lucena 5 0 3 6 140
+Sandino 1 0 0 1 10

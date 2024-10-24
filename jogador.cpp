@@ -134,7 +134,7 @@ void salvarJogadores(const vector<Jogador>& jogadores, const string& arquivo) {
     }
 
     outFile.close();
-    cout << "Jogadores salvos com sucesso." << endl;  // Mensagem de debug
+    cout << endl <<endl; 
 }
 
 // Função para selecionar ou cadastrar um novo jogador

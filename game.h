@@ -10,7 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <random>  // Para sortear ataques aleatórios
+#include <random>
 #include <cmath>
 
 using namespace std;
@@ -59,9 +59,11 @@ void atribuirAtaquesAosPokemons(vector<Pokemon>& pokemons, const vector<Ataque>&
 // Função para calcular dano
 int calcularCritico();
 int calcularAleatorio();
-float calcularEficacia(const Ataque& ataque, const Pokemon& defensor);
+float calcularEficacia(const string& tipoAtaque, const string& tipoDefesa);
 float calcularSTAB(const Ataque& ataque, const Pokemon& atacante);
 int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque& ataque);
+bool calcularPrecisao(float precisao);
+
 
 // Função para a CPU escolher um ataque aleatório
 int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, int dificuldade);
