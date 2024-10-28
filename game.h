@@ -12,8 +12,19 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#include <unordered_map>
+
 
 using namespace std;
+
+// Enum para representar os tipos de Pokémon
+enum Tipo {
+    NORMAL, FOGO, AGUA, ELETRICO, GRAMA, GELO, LUTADOR, VENENOSO,
+    TERRESTRE, VOADOR, PSIQUICO, INSETO, ROCHA, FANTASMA, DRAGAO, METAL, FADA
+};
+
+extern unordered_map<string, Tipo> tipoMap;
+extern float eficacia[17][17];
 
 // Função para exibir o menu
 void exibirMenu();

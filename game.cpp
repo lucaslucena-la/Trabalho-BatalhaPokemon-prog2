@@ -2,6 +2,36 @@
 
 using namespace std;
 
+unordered_map<string, Tipo> tipoMap = {
+    {"Normal", NORMAL}, {"Fogo", FOGO}, {"Agua", AGUA}, {"Eletrico", ELETRICO},
+    {"Grama", GRAMA}, {"Gelo", GELO}, {"Lutador", LUTADOR}, {"Venenoso", VENENOSO},
+    {"Terrestre", TERRESTRE}, {"Voador", VOADOR}, {"Psiquico", PSIQUICO},
+    {"Inseto", INSETO}, {"Rocha", ROCHA}, {"Fantasma", FANTASMA},
+    {"Dragao", DRAGAO}, {"Metal", METAL}, {"Fada", FADA}
+};
+
+float eficacia[17][17] = {
+    // Normal, Fogo, Agua, Eletrico, Grama, Gelo, Lutador, Venenoso, Terrestre, Voador, Psiquico, Inseto, Rocha, Fantasma, Dragao, Metal, Fada
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0, 1, 0.5, 1},  // Normal
+    {1, 0.5, 0.5, 1, 2, 2, 1, 1, 1, 1, 1, 2, 0.5, 1, 0.5, 2, 1},  // Fogo
+    {1, 2, 0.5, 1, 0.5, 1, 1, 1, 2, 1, 1, 1, 2, 1, 0.5, 1, 1},  // Agua
+    {1, 1, 2, 0.5, 0.5, 1, 1, 1, 0, 2, 1, 1, 1, 1, 0.5, 1, 1},  // Eletrico
+    {1, 0.5, 2, 1, 0.5, 1, 1, 0.5, 2, 0.5, 1, 0.5, 2, 1, 0.5, 1, 1},  // Grama
+    {1, 0.5, 0.5, 1, 2, 0.5, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1},  // Gelo
+    {2, 1, 1, 1, 1, 2, 1, 0.5, 1, 0.5, 0.5, 0.5, 2, 0, 1, 2, 0.5},  // Lutador
+    {1, 1, 1, 1, 2, 1, 1, 0.5, 0.5, 1, 1, 1, 0.5, 0.5, 1, 0, 2},  // Venenoso
+    {1, 2, 1, 2, 0.5, 1, 1, 2, 1, 0, 1, 0.5, 2, 1, 1, 2, 1},  // Terrestre
+    {1, 1, 1, 0.5, 2, 1, 2, 1, 1, 1, 1, 2, 0.5, 1, 1, 0.5, 1},  // Voador
+    {1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1},  // Psiquico
+    {1, 0.5, 1, 1, 2, 1, 0.5, 0.5, 1, 0.5, 2, 1, 1, 0.5, 1, 0.5, 0.5},  // Inseto
+    {1, 2, 1, 1, 1, 2, 1, 1, 0.5, 2, 1, 2, 1, 1, 1, 0.5, 1},  // Rocha
+    {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1},  // Fantasma
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0.5, 0},  // Dragao
+    {1, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5},  // Metal
+    {1, 0.5, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1}  // Fada
+};
+
+
 /***************************** FUNÇÕES DE EXIBIÇÃO *****************************/
 
 // Exibe o menu principal do jogo
@@ -304,168 +334,11 @@ int calcularAleatorio() {
 // Calcula a eficácia do ataque contra o Pokémon defensor
 // Função que calcula a eficácia de um ataque baseado no tipo do ataque e do defensor
 // Retorna valores: 2.0 (super eficaz), 0.5 (pouco eficaz), 1.0 (normalmente eficaz), 0.0 (sem efeito)
+// Função para calcular a eficácia do ataque
 float calcularEficacia(const string& tipoAtaque, const string& tipoDefesa) {
-
-    // Verifica se o tipo do ataque é "Normal"
-    if (tipoAtaque == "Normal") {
-        if (tipoDefesa == "Rocha" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra "Rocha" e "Metal"
-        } else if (tipoDefesa == "Fantasma") {
-            return 0.0;  // Sem efeito contra "Fantasma"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Fogo"
-    else if (tipoAtaque == "Fogo") {
-        if (tipoDefesa == "Fogo" || tipoDefesa == "Água" || tipoDefesa == "Rocha" || tipoDefesa == "Dragão") {
-            return 0.5;  // Pouco eficaz contra "Fogo", "Água", "Rocha" e "Dragão"
-        } else if (tipoDefesa == "Grama" || tipoDefesa == "Gelo" || tipoDefesa == "Inseto" || tipoDefesa == "Metal") {
-            return 2.0;  // Super eficaz contra "Grama", "Gelo", "Inseto" e "Metal"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Água"
-    else if (tipoAtaque == "Água") {
-        if (tipoDefesa == "Água" || tipoDefesa == "Grama" || tipoDefesa == "Dragão") {
-            return 0.5;  // Pouco eficaz contra "Água", "Grama", "Dragão"
-        } else if (tipoDefesa == "Fogo" || tipoDefesa == "Terrestre" || tipoDefesa == "Rocha") {
-            return 2.0;  // Super eficaz contra "Fogo", "Terrestre" e "Rocha"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Elétrico"
-    else if (tipoAtaque == "Elétrico") {
-        if (tipoDefesa == "Elétrico" || tipoDefesa == "Grama" || tipoDefesa == "Dragão") {
-            return 0.5;  // Pouco eficaz contra "Elétrico", "Grama", "Dragão"
-        } else if (tipoDefesa == "Água" || tipoDefesa == "Voador") {
-            return 2.0;  // Super eficaz contra "Água" e "Voador"
-        } else if (tipoDefesa == "Terrestre") {
-            return 0.0;  // Sem efeito contra "Terrestre"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Grama"
-    else if (tipoAtaque == "Grama") {
-        if (tipoDefesa == "Fogo" || tipoDefesa == "Grama" || tipoDefesa == "Voador" || tipoDefesa == "Inseto" || tipoDefesa == "Dragão" || tipoDefesa == "Veneno") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Água" || tipoDefesa == "Terrestre" || tipoDefesa == "Rocha") {
-            return 2.0;  // Super eficaz contra "Água", "Terrestre" e "Rocha"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Gelo"
-    else if (tipoAtaque == "Gelo") {
-        if (tipoDefesa == "Fogo" || tipoDefesa == "Água" || tipoDefesa == "Gelo" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Grama" || tipoDefesa == "Terrestre" || tipoDefesa == "Voador" || tipoDefesa == "Dragão") {
-            return 2.0;  // Super eficaz contra "Grama", "Terrestre", "Voador" e "Dragão"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Lutador"
-    else if (tipoAtaque == "Lutador") {
-        if (tipoDefesa == "Voador" || tipoDefesa == "Inseto" || tipoDefesa == "Psíquico" || tipoDefesa == "Fada") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Normal" || tipoDefesa == "Gelo" || tipoDefesa == "Rocha" || tipoDefesa == "Metal" || tipoDefesa == "Sombrio") {
-            return 2.0;  // Super eficaz contra "Normal", "Gelo", "Rocha", "Metal" e "Sombrio"
-        } else if (tipoDefesa == "Fantasma") {
-            return 0.0;  // Sem efeito contra "Fantasma"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Venenoso"
-    else if (tipoAtaque == "Venenoso") {
-        if (tipoDefesa == "Venenoso" || tipoDefesa == "Terrestre" || tipoDefesa == "Rocha" || tipoDefesa == "Fantasma") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Grama" || tipoDefesa == "Fada") {
-            return 2.0;  // Super eficaz contra "Grama" e "Fada"
-        } else if (tipoDefesa == "Metal") {
-            return 0.0;  // Sem efeito contra "Metal"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Terrestre"
-    else if (tipoAtaque == "Terrestre") {
-        if (tipoDefesa == "Grama" || tipoDefesa == "Inseto") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Elétrico" || tipoDefesa == "Fogo" || tipoDefesa == "Veneno" || tipoDefesa == "Rocha" || tipoDefesa == "Metal") {
-            return 2.0;  // Super eficaz contra esses tipos
-        } else if (tipoDefesa == "Voador") {
-            return 0.0;  // Sem efeito contra "Voador"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Voador"
-    else if (tipoAtaque == "Voador") {
-        if (tipoDefesa == "Elétrico" || tipoDefesa == "Rocha" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Grama" || tipoDefesa == "Lutador" || tipoDefesa == "Inseto") {
-            return 2.0;  // Super eficaz contra "Grama", "Lutador" e "Inseto"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Psíquico"
-    else if (tipoAtaque == "Psíquico") {
-        if (tipoDefesa == "Psíquico" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra "Psíquico" e "Metal"
-        } else if (tipoDefesa == "Lutador" || tipoDefesa == "Venenoso") {
-            return 2.0;  // Super eficaz contra "Lutador" e "Venenoso"
-        } else if (tipoDefesa == "Sombrio") {
-            return 0.0;  // Sem efeito contra "Sombrio"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Inseto"
-    else if (tipoAtaque == "Inseto") {
-        if (tipoDefesa == "Fogo" || tipoDefesa == "Lutador" || tipoDefesa == "Venenoso" || tipoDefesa == "Voador" || tipoDefesa == "Fantasma" || tipoDefesa == "Metal" || tipoDefesa == "Fada") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Grama" || tipoDefesa == "Psíquico" || tipoDefesa == "Sombrio") {
-            return 2.0;  // Super eficaz contra "Grama", "Psíquico" e "Sombrio"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Rocha"
-    else if (tipoAtaque == "Rocha") {
-        if (tipoDefesa == "Lutador" || tipoDefesa == "Terrestre" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Fogo" || tipoDefesa == "Gelo" || tipoDefesa == "Inseto" || tipoDefesa == "Voador") {
-            return 2.0;  // Super eficaz contra "Fogo", "Gelo", "Inseto" e "Voador"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Fantasma"
-    else if (tipoAtaque == "Fantasma") {
-        if (tipoDefesa == "Sombrio") {
-            return 0.5;  // Pouco eficaz contra "Sombrio"
-        } else if (tipoDefesa == "Psíquico" || tipoDefesa == "Fantasma") {
-            return 2.0;  // Super eficaz contra "Psíquico" e "Fantasma"
-        } else if (tipoDefesa == "Normal") {
-            return 0.0;  // Sem efeito contra "Normal"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Dragão"
-    else if (tipoAtaque == "Dragão") {
-        if (tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra "Metal"
-        } else if (tipoDefesa == "Dragão") {
-            return 2.0;  // Super eficaz contra "Dragão"
-        } else if (tipoDefesa == "Fada") {
-            return 0.0;  // Sem efeito contra "Fada"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Sombrio"
-    else if (tipoAtaque == "Sombrio") {
-        if (tipoDefesa == "Lutador" || tipoDefesa == "Sombrio" || tipoDefesa == "Fada") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Psíquico" || tipoDefesa == "Fantasma") {
-            return 2.0;  // Super eficaz contra "Psíquico" e "Fantasma"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Metal"
-    else if (tipoAtaque == "Metal") {
-        if (tipoDefesa == "Fogo" || tipoDefesa == "Água" || tipoDefesa == "Elétrico" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Gelo" || tipoDefesa == "Rocha" || tipoDefesa == "Fada") {
-            return 2.0;  // Super eficaz contra "Gelo", "Rocha" e "Fada"
-        }
-    } 
-    // Verifica se o tipo do ataque é "Fada"
-    else if (tipoAtaque == "Fada") {
-        if (tipoDefesa == "Fogo" || tipoDefesa == "Veneno" || tipoDefesa == "Metal") {
-            return 0.5;  // Pouco eficaz contra esses tipos
-        } else if (tipoDefesa == "Lutador" || tipoDefesa == "Dragão" || tipoDefesa == "Sombrio") {
-            return 2.0;  // Super eficaz contra "Lutador", "Dragão" e "Sombrio"
-        }
-    }
-
-    return 1.0;  // Se nenhum caso específico for encontrado, o ataque é normalmente eficaz
+    Tipo ataque = tipoMap[tipoAtaque];  // Converte o tipo de ataque para o enum
+    Tipo defesa = tipoMap[tipoDefesa];  // Converte o tipo de defesa para o enum
+    return eficacia[ataque][defesa];    // Retorna o valor da matriz de eficácia
 }
 
 // Calcula o bônus de STAB (Same Type Attack Bonus)
@@ -473,8 +346,9 @@ float calcularSTAB(const Ataque& ataque, const Pokemon& atacante) {
     // Se o tipo do ataque for igual ao tipo do Pokémon, aplica o bônus
     if (ataque.getTipo() == atacante.getTipo1() || ataque.getTipo() == atacante.getTipo2()) {
         return 1.5;  // Bônus de STAB aplicado
+    }else{
+        return 1.0;  // Sem bônus de STAB
     }
-    return 1.0;  // Sem bônus de STAB
 }
 
 bool calcularPrecisao(float precisao) {
@@ -485,7 +359,7 @@ bool calcularPrecisao(float precisao) {
     return dist(gen) <= precisao;
 }
 
-// Calcula o dano final de um ataque
+
 int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque& ataque) {
     int nivel = atacante.getNivel();  // Nível do atacante
     int poder = ataque.getPoder();  // Poder do ataque
@@ -494,19 +368,16 @@ int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque&
 
     int critico = calcularCritico();  // Calcula se o ataque é crítico
     float STAB = calcularSTAB(ataque, atacante);  // Calcula o bônus de STAB
-    
-    float eficacia = calcularEficacia(ataque.getTipo(), defensor.getTipo1());
-
-    // Se o defensor tiver um segundo tipo, multiplicamos a eficácia pelos dois tipos
+    float eficacia = calcularEficacia(ataque.getTipo(), defensor.getTipo1());  // Calcula a eficácia do ataque]
     if (!defensor.getTipo2().empty()) {
-        eficacia *= calcularEficacia(ataque.getTipo(), defensor.getTipo2());
+        eficacia *= calcularEficacia(ataque.getTipo(), defensor.getTipo2());  // Multiplica pela eficácia contra o segundo tipo
     }
-
     int aleatorio = calcularAleatorio();  // Gera o fator aleatório de dano
 
     // Cálculo base do dano
     int danoBase = (((2 * nivel * poder * ataqueStat / defesaStat) / 50) + 2);
     int danoFinal = (((danoBase * critico * STAB * eficacia * aleatorio) / 255));
+
 
     return danoFinal;  // Retorna o dano final calculado
 }
@@ -571,20 +442,23 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
         int piorAtaque = 0;
         float piorDano = calcularDano(cpuPokemon, jogadorPokemon, cpuPokemon.getAtaque(0));  // Inicializa com o primeiro ataque
 
-        for (int i = 1; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             Ataque ataque = cpuPokemon.getAtaque(i);
             float danoEstimado = calcularDano(cpuPokemon, jogadorPokemon, ataque);
+            cout << "Dano estimado para ataque " << ataque.getNome() << ": " << danoEstimado << endl;
+            
+            // Verifica se o dano atual é menor que o piorDano
             if (danoEstimado < piorDano) {
                 piorDano = danoEstimado;
                 piorAtaque = i;
             }
         }
         return piorAtaque;
-
-    } else if (dificuldade == 2) {
+    }  else if (dificuldade == 2) {
         // Escolhe um ataque aleatório no modo médio
-        return escolherAtaqueAleatorioCPU(cpuPokemon);
-
+        int ataqueAleatorio = escolherAtaqueAleatorioCPU(cpuPokemon);
+        cout << "Modo Médio: Ataque aleatório escolhido: " << cpuPokemon.getAtaque(ataqueAleatorio).getNome() << endl;
+        return ataqueAleatorio;
     } else {
         // Escolhe o ataque que causa o maior dano no modo difícil
         int melhorAtaque = 0;
@@ -592,11 +466,15 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
         for (int i = 0; i < 4; ++i) {
             Ataque ataque = cpuPokemon.getAtaque(i);
             float danoEstimado = calcularDano(cpuPokemon, jogadorPokemon, ataque);
+            cout << "Dano estimado para ataque " << ataque.getNome() << ": " << danoEstimado << endl;
+
+            
             if (danoEstimado > melhorDano) {
                 melhorDano = danoEstimado;
                 melhorAtaque = i;
             }
         }
+        cout << "Ataque escolhido (maior dano): " << cpuPokemon.getAtaque(melhorAtaque).getNome() << endl;
         return melhorAtaque;
     }
 }

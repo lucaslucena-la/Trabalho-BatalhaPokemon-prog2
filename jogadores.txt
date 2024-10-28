@@ -1,2 +1,1 @@
-Lucena 5 0 3 6 140
-Sandino 1 0 0 1 10
+lucena 1 0 0 0 10
