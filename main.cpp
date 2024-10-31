@@ -60,7 +60,7 @@ int main() {
             cout << "\nEscolha seu Pokémon inicial (1, 2 ou 3): ";
             cin >> escolhaInicial;
             escolhaInicial -= 1;  // Ajusta a escolha para o índice correto do vetor
-            Pokemon& jogadorPokemon = jogadorPokemons[escolhaInicial];  // Define o Pokémon inicial do jogador
+            int pokemonAtual = escolhaInicial;  // Define o índice do Pokémon inicial do jogador
             Pokemon& cpuPokemon = cpuPokemons[0];  // Define o Pokémon inicial da CPU
 
             // Atribui ataques aos pokémons
@@ -92,7 +92,7 @@ int main() {
 
                 // Exibe o status dos pokémons
                 cout << "\n----- Status dos Pokémons -----\n";
-                cout << "Jogador: " << jogadorPokemon.getNome() << " - HP: " << jogadorPokemon.getHP() << endl;
+                cout << "Jogador: " << jogadorPokemons[pokemonAtual].getNome() << " - HP: " << jogadorPokemons[pokemonAtual].getHP() << endl;
                 cout << "CPU: " << cpuPokemon.getNome() << " - HP: " << cpuPokemon.getHP() << endl;
                 cout << "-------------------------------\n";
 
@@ -104,13 +104,13 @@ int main() {
 
                 if (acaoJogador == 1) {
                     // Jogador escolhe um ataque
-                    exibirAtaques(jogadorPokemon);
+                    exibirAtaques(jogadorPokemons[pokemonAtual]);
                     int escolhaAtaque;
                     cin >> escolhaAtaque;
                     escolhaAtaque -= 1;  // Ajusta a escolha para o índice correto do vetor
 
                     // Jogador realiza o ataque
-                    Ataque ataqueJogador = jogadorPokemon.getAtaque(escolhaAtaque);
+                    Ataque ataqueJogador = jogadorPokemons[pokemonAtual].getAtaque(escolhaAtaque);
                     float eficacia = calcularEficacia(ataqueJogador.getTipo(), cpuPokemon.getTipo1());  // Calcula a eficácia do ataque
                     if (!cpuPokemon.getTipo2().empty()) {
                         eficacia *= calcularEficacia(ataqueJogador.getTipo(), cpuPokemon.getTipo2());
@@ -118,24 +118,24 @@ int main() {
 
                     int critico = calcularCritico();  // Calcula se o ataque foi um golpe crítico
                     if (critico == 2) {
-                        cout << "------------------ Foi um golpe crítico de " << jogadorPokemon.getNome() << " com o ataque " << ataqueJogador.getNome() << "------------------" << endl;
-                        logDeBatalha.push_back("Foi um golpe crítico de " + jogadorPokemon.getNome() + " com o ataque " + ataqueJogador.getNome() + "!");
+                        cout << "------------------ Foi um golpe crítico de " << jogadorPokemons[pokemonAtual].getNome() << " com o ataque " << ataqueJogador.getNome() << "------------------" << endl;
+                        logDeBatalha.push_back("Foi um golpe crítico de " + jogadorPokemons[pokemonAtual].getNome() + " com o ataque " + ataqueJogador.getNome() + "!");
                     }
 
                     cout << endl;
                     // Verifica a eficácia do ataque
                     if (eficacia == 0.0) {
                         cout << "O ataque do jogador não é efetivo!" << endl;
-                        logDeBatalha.push_back("O ataque de " + jogadorPokemon.getNome() + " não foi efetivo!");
+                        logDeBatalha.push_back("O ataque de " + jogadorPokemons[pokemonAtual].getNome() + " não foi efetivo!");
                     } else if (eficacia == 0.5) {
                         cout << "O ataque do jogador não foi muito eficaz..." << endl;
-                        logDeBatalha.push_back("O ataque de " + jogadorPokemon.getNome() + " não foi muito eficaz...");
+                        logDeBatalha.push_back("O ataque de " + jogadorPokemons[pokemonAtual].getNome() + " não foi muito eficaz...");
                     } else if (eficacia == 1.0) {
                         cout << "O ataque do jogador Foi normalmente eficaz." << endl;
-                        logDeBatalha.push_back("O ataque de " + jogadorPokemon.getNome() + " foi normalmente eficaz...");
+                        logDeBatalha.push_back("O ataque de " + jogadorPokemons[pokemonAtual].getNome() + " foi normalmente eficaz...");
                     } else if (eficacia == 2.0) {
                         cout << "O ataque do jogador Foi super eficaz!" << endl;
-                        logDeBatalha.push_back("O ataque de " + jogadorPokemon.getNome() + " foi super eficaz!");
+                        logDeBatalha.push_back("O ataque de " + jogadorPokemons[pokemonAtual].getNome() + " foi super eficaz!");
                     }
                     
 
@@ -144,11 +144,11 @@ int main() {
                         cout << endl;
 
                         cout << "!!!!!!!!! O ataque do jogador falhou !!!!!!!!!!" << endl;
-                        logDeBatalha.push_back("O ataque de " + jogadorPokemon.getNome() + " falhou!");
+                        logDeBatalha.push_back("O ataque de " + jogadorPokemons[pokemonAtual].getNome() + " falhou!");
                     } else {
-                        int danoJogador = calcularDano(jogadorPokemon, cpuPokemon, ataqueJogador);
-                        cout << jogadorPokemon.getNome() << " usou " << ataqueJogador.getNome() << " e causou " << danoJogador << " de dano!" << endl;
-                        logDeBatalha.push_back(jogadorPokemon.getNome() + " usou " + ataqueJogador.getNome() + " e causou " + to_string(danoJogador) + " de dano!");
+                        int danoJogador = calcularDano(jogadorPokemons[pokemonAtual], cpuPokemon, ataqueJogador);
+                        cout << jogadorPokemons[pokemonAtual].getNome() << " usou " << ataqueJogador.getNome() << " e causou " << danoJogador << " de dano!" << endl;
+                        logDeBatalha.push_back(jogadorPokemons[pokemonAtual].getNome() + " usou " + ataqueJogador.getNome() + " e causou " + to_string(danoJogador) + " de dano!");
                         
                         cpuPokemon.receberDano(danoJogador);  // Aplica o dano ao Pokémon da CPU
 
@@ -177,23 +177,24 @@ int main() {
 
                                     if (escolha == 1) {
                                         // Exibe os ataques do Pokémon do jogador e executa o ataque
-                                        exibirAtaques(jogadorPokemon);
+                                        exibirAtaques(jogadorPokemons[pokemonAtual]);
                                         int ataqueEscolhido;
                                         cin >> ataqueEscolhido;
                                         ataqueEscolhido -= 1;  // Ajusta o índice do ataque
 
-                                        Ataque ataqueJogador = jogadorPokemon.getAtaque(ataqueEscolhido);
-                                        int danoJogador = calcularDano(jogadorPokemon, cpuPokemon, ataqueJogador);
+                                        Ataque ataqueJogador = jogadorPokemons[pokemonAtual].getAtaque(ataqueEscolhido);
+                                        int danoJogador = calcularDano(jogadorPokemons[pokemonAtual], cpuPokemon, ataqueJogador);
                                         
-                                        cout << jogadorPokemon.getNome() << " usou " << ataqueJogador.getNome() 
+                                        cout << jogadorPokemons[pokemonAtual].getNome() << " usou " << ataqueJogador.getNome() 
                                             << " e causou " << danoJogador << " de dano!" << endl;
-                                        logDeBatalha.push_back(jogadorPokemon.getNome() + " usou " + ataqueJogador.getNome() + " e causou " + to_string(danoJogador) + " de dano!");
+                                        logDeBatalha.push_back(jogadorPokemons[pokemonAtual].getNome() + " usou " + ataqueJogador.getNome() + " e causou " + to_string(danoJogador) + " de dano!");
 
                                         cpuPokemon.receberDano(danoJogador);
 
                                         turnoJogador = false;  // Encerrar o turno do jogador para que a CPU possa atacar
                                     } else if (escolha == 2) {
-                                        jogadorPokemon = trocarPokemonJogador(jogadorPokemons);  // Permite que o jogador troque de Pokémon
+                                        jogadorPokemons[pokemonAtual] = trocarPokemonJogador(jogadorPokemons, pokemonAtual);  // Passa o índice pokemonAtual por referência
+
                                         turnoJogador = true;  // Encerrar o turno do jogador para que a CPU possa atacar
                                     } else {
                                         cout << "Opção inválida! Tente novamente.\n";
@@ -210,7 +211,8 @@ int main() {
                     }
                 } else if (acaoJogador == 2) {
                     // Jogador troca de Pokémon
-                    jogadorPokemon = trocarPokemonJogador(jogadorPokemons);
+                    jogadorPokemons[pokemonAtual] = trocarPokemonJogador(jogadorPokemons, pokemonAtual);
+
                 } else if (acaoJogador == 3) {
                     // Exibe o histórico de batalha
                     exibirHistoricoDeBatalha(logDeBatalha);
@@ -220,7 +222,7 @@ int main() {
 
                 // CPU ataca
                 if (!cpuPokemon.estaDerrotado()) {
-                int escolhaCPU = escolherAtaqueCPU(cpuPokemon, jogadorPokemon, dificuldade);  // CPU escolhe o ataque
+                int escolhaCPU = escolherAtaqueCPU(cpuPokemon, jogadorPokemons[pokemonAtual], dificuldade);  // CPU escolhe o ataque
                 Ataque ataqueCPU = cpuPokemon.getAtaque(escolhaCPU);
 
                 int criticoCPU = calcularCritico();  // Calcula se o ataque da CPU foi um golpe crítico
@@ -230,9 +232,9 @@ int main() {
                     logDeBatalha.push_back("Foi um golpe crítico de " + cpuPokemon.getNome() + " com o ataque " + ataqueCPU.getNome() + "!");
                 }
 
-                float eficacia = calcularEficacia(ataqueCPU.getTipo(), jogadorPokemon.getTipo1());  // Calcula a eficácia do ataque da CPU
-                if (!jogadorPokemon.getTipo2().empty()) {
-                    eficacia *= calcularEficacia(ataqueCPU.getTipo(), jogadorPokemon.getTipo2());
+                float eficacia = calcularEficacia(ataqueCPU.getTipo(), jogadorPokemons[pokemonAtual].getTipo1());  // Calcula a eficácia do ataque da CPU
+                if (!jogadorPokemons[pokemonAtual].getTipo2().empty()) {
+                    eficacia *= calcularEficacia(ataqueCPU.getTipo(), jogadorPokemons[pokemonAtual].getTipo2());
                 }
 
                 // Verifica a eficácia do ataque da CPU
@@ -260,18 +262,18 @@ int main() {
                     cout << "!!!!!!!! O ataque da CPU falhou !!!!!!!!" << endl;
                     logDeBatalha.push_back("O ataque de " + cpuPokemon.getNome() + " falhou!");
                 } else {
-                    int danoCPU = calcularDano(cpuPokemon, jogadorPokemon, ataqueCPU);
+                    int danoCPU = calcularDano(cpuPokemon, jogadorPokemons[pokemonAtual], ataqueCPU);
                     cout << cpuPokemon.getNome() << " usou " << ataqueCPU.getNome() << " e causou " << danoCPU << " de dano!" << endl;
                     logDeBatalha.push_back(cpuPokemon.getNome() + " usou " + ataqueCPU.getNome() + " e causou " + to_string(danoCPU) + " de dano!");
 
-                    jogadorPokemon.receberDano(danoCPU);  // Aplica o dano ao Pokémon do jogador
+                    jogadorPokemons[pokemonAtual].receberDano(danoCPU);  // Aplica o dano ao Pokémon do jogador
 
-                    cout << jogadorPokemon.getNome() << " agora tem " << jogadorPokemon.getHP() << " de HP!" << endl;
+                    cout << jogadorPokemons[pokemonAtual].getNome() << " agora tem " << jogadorPokemons[pokemonAtual].getHP() << " de HP!" << endl;
 
-                    if (jogadorPokemon.estaDerrotado()) {
-                        cout << jogadorPokemon.getNome() << " foi derrotado!" << endl;
+                    if (jogadorPokemons[pokemonAtual].estaDerrotado()) {
+                        cout << jogadorPokemons[pokemonAtual].getNome() << " foi derrotado!" << endl;
                         if (!jogadorPokemons.empty()) {
-                            jogadorPokemon = jogadorPokemons[0];  // Se o Pokémon do jogador for derrotado, troca para o próximo
+                            jogadorPokemons[pokemonAtual] = jogadorPokemons[0];  // Se o Pokémon do jogador for derrotado, troca para o próximo
                         }
                     }
                 }

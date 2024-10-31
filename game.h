@@ -36,7 +36,7 @@ int ajustarDificuldade();
 void exibirRanking(int vitorias, int derrotas);
 
 // Função para trocar o Pokémon do jogador
-Pokemon& trocarPokemonJogador(vector<Pokemon>& jogadorPokemons);
+Pokemon& trocarPokemonJogador(vector<Pokemon>& jogadorPokemons, int& pokemonAtual);
 
 // Função para a CPU trocar de Pokémon
 Pokemon& trocarPokemonCPU(vector<Pokemon>& cpuPokemons);

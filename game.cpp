@@ -79,39 +79,44 @@ void exibirAtaques(const Pokemon& pokemon) {
 
 // Permite que o jogador troque de Pokémon durante a batalha
 // Retorna a referência ao Pokémon escolhido
-Pokemon& trocarPokemonJogador(vector<Pokemon>& jogadorPokemons) {
-    while (true) {  // Loop até que uma escolha válida seja feita
+Pokemon& trocarPokemonJogador(vector<Pokemon>& jogadorPokemons, int& pokemonAtual) {
+    while (true) {
         cout << "\nEscolha um Pokémon para continuar a batalha:" << endl;
-        bool pokemonDisponivel = false;  // Verifica se há Pokémons disponíveis
 
-        // Exibe os Pokémons que ainda estão disponíveis (não derrotados)
+        // Exibe os Pokémons que ainda estão disponíveis (não derrotados e não o atual)
         for (size_t i = 0; i < jogadorPokemons.size(); ++i) {
-            if (!jogadorPokemons[i].estaDerrotado()) {  // Só exibe os que não foram derrotados
-                cout << i + 1 << ". " << jogadorPokemons[i].getNome() 
+            if (!jogadorPokemons[i].estaDerrotado()) {
+                // Exibe apenas Pokémons não derrotados e que não são o Pokémon atual
+                cout << i + 1 << ". " << jogadorPokemons[i].getNome()
                      << " (HP: " << jogadorPokemons[i].getHP() << ")" << endl;
-                pokemonDisponivel = true;  // Marca que há Pokémons disponíveis
             }
         }
 
-        // Se não houver mais Pokémons disponíveis, termina o jogo
-        if (!pokemonDisponivel) {
-            cout << "Todos os seus Pokémons foram derrotados!" << endl;
-            exit(0);  // Finaliza o jogo
-        }
+        // Exibe o status atualizado do Pokémon atual
+        cout << "Pokémon atual: " << jogadorPokemons[pokemonAtual].getNome() 
+             << " (HP: " << jogadorPokemons[pokemonAtual].getHP() << ")" << endl;
 
-        int escolha;  // Armazena a escolha do jogador
+        int escolha;
         cin >> escolha;
-        escolha -= 1;  // Ajusta para índice da lista (começa de 0)
+        escolha -= 1;
 
-        // Verifica se a escolha é válida e o Pokémon não foi derrotado
-        if (escolha >= 0 && static_cast<size_t>(escolha) < jogadorPokemons.size() && !jogadorPokemons[escolha].estaDerrotado()) {
-            return jogadorPokemons[escolha];  // Retorna o Pokémon escolhido
+        // Verifica se a escolha é válida
+        if (escolha >= 0 && static_cast<size_t>(escolha) < jogadorPokemons.size() 
+            && !jogadorPokemons[escolha].estaDerrotado()) {
+            
+            // Exibe uma mensagem de troca e atualiza pokemonAtual
+            cout << "Trocando Pokémon " << jogadorPokemons[pokemonAtual].getNome() 
+                 << " por " << jogadorPokemons[escolha].getNome() << endl;
+
+            pokemonAtual = escolha;  // Atualiza o índice do Pokémon atual
+            return jogadorPokemons[escolha];
         } else {
-            // Se a escolha for inválida ou o Pokémon já estiver derrotado
-            cout << "Este Pokémon já foi derrotado ou a escolha é inválida! Escolha outro." << endl;
+            cout << "Este Pokémon já foi derrotado, é o atual, ou a escolha é inválida! Escolha outro." << endl;
         }
     }
 }
+
+
 
 // Função que permite à CPU trocar de Pokémon
 // A CPU sempre escolhe o primeiro Pokémon não derrotado
@@ -361,12 +366,12 @@ bool calcularPrecisao(float precisao) {
 
 
 int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque& ataque) {
-    int nivel = atacante.getNivel();  // Nível do atacante
-    int poder = ataque.getPoder();  // Poder do ataque
-    int ataqueStat = (ataque.getCategoria() == "Fisico") ? atacante.getAtaque() : atacante.getAtaqueEspecial();  // Atributo de ataque
-    int defesaStat = (ataque.getCategoria() == "Fisico") ? defensor.getDefesa() : defensor.getDefesaEspecial();  // Atributo de defesa
+    float nivel = atacante.getNivel();  // Nível do atacante
+    float poder = ataque.getPoder();  // Poder do ataque
+    float ataqueStat = (ataque.getCategoria() == "Fisico") ? atacante.getAtaque() : atacante.getAtaqueEspecial();  // Atributo de ataque
+    float defesaStat = (ataque.getCategoria() == "Fisico") ? defensor.getDefesa() : defensor.getDefesaEspecial();  // Atributo de defesa
 
-    int critico = calcularCritico();  // Calcula se o ataque é crítico
+    float critico = calcularCritico();  // Calcula se o ataque é crítico
     float STAB = calcularSTAB(ataque, atacante);  // Calcula o bônus de STAB
     float eficacia = calcularEficacia(ataque.getTipo(), defensor.getTipo1());  // Calcula a eficácia do ataque]
     if (!defensor.getTipo2().empty()) {
@@ -375,9 +380,8 @@ int calcularDano(const Pokemon& atacante, const Pokemon& defensor, const Ataque&
     int aleatorio = calcularAleatorio();  // Gera o fator aleatório de dano
 
     // Cálculo base do dano
-    int danoBase = (((2 * nivel * poder * ataqueStat / defesaStat) / 50) + 2);
-    int danoFinal = (((danoBase * critico * STAB * eficacia * aleatorio) / 255));
-
+    float danoBase = (((2 * nivel * poder * ataqueStat / defesaStat) / 50) + 2);
+    float danoFinal = (((danoBase * critico * STAB * eficacia * aleatorio) / 255));
 
     return danoFinal;  // Retorna o dano final calculado
 }
@@ -445,7 +449,6 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
         for (int i = 0; i < 4; ++i) {
             Ataque ataque = cpuPokemon.getAtaque(i);
             float danoEstimado = calcularDano(cpuPokemon, jogadorPokemon, ataque);
-            cout << "Dano estimado para ataque " << ataque.getNome() << ": " << danoEstimado << endl;
             
             // Verifica se o dano atual é menor que o piorDano
             if (danoEstimado < piorDano) {
@@ -457,7 +460,6 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
     }  else if (dificuldade == 2) {
         // Escolhe um ataque aleatório no modo médio
         int ataqueAleatorio = escolherAtaqueAleatorioCPU(cpuPokemon);
-        cout << "Modo Médio: Ataque aleatório escolhido: " << cpuPokemon.getAtaque(ataqueAleatorio).getNome() << endl;
         return ataqueAleatorio;
     } else {
         // Escolhe o ataque que causa o maior dano no modo difícil
@@ -466,7 +468,6 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
         for (int i = 0; i < 4; ++i) {
             Ataque ataque = cpuPokemon.getAtaque(i);
             float danoEstimado = calcularDano(cpuPokemon, jogadorPokemon, ataque);
-            cout << "Dano estimado para ataque " << ataque.getNome() << ": " << danoEstimado << endl;
 
             
             if (danoEstimado > melhorDano) {
@@ -474,7 +475,6 @@ int escolherAtaqueCPU(const Pokemon& cpuPokemon, const Pokemon& jogadorPokemon, 
                 melhorAtaque = i;
             }
         }
-        cout << "Ataque escolhido (maior dano): " << cpuPokemon.getAtaque(melhorAtaque).getNome() << endl;
         return melhorAtaque;
     }
 }
